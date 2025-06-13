@@ -4,8 +4,22 @@ import Product from "../models/Product.js";
 export const addProduct = async(req, res) => {
     try {
         const productData = new Product(req.body);
-        const {name} = productData;
+        const {name, price, quantity} = productData;
 
+        // Input Validation
+        if (!name.trim() || name.length < 2) {
+            return res.status(400).json({ error: 'Product name must be at least 2 characters.' });
+        }
+
+        if (price == null || isNaN(price) || price <= 0) {
+            return res.status(400).json({ error: 'Price must be a positive number.' });
+        }
+
+        if (quantity == null || isNaN(quantity) || quantity < 0) {
+            return res.status(400).json({ error: 'Quantity must be a positive number.' });
+        }
+
+        // Check and Add Product
         const productExist = await Product.findOne({name})
         if(productExist){
             return res.status(400).json({message: "Product already exist."})
